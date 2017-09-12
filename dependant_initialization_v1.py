@@ -55,6 +55,8 @@
 
 # model2 = initialize(model= model, X_train=X_train)
 #
+
+
 import os
 from keras.models import Model
 import numpy as np;
@@ -110,18 +112,20 @@ def initialize(model, X_train):
                 for img in sample:
                     intermediate_layer_model = Model(inputs=model.input,
                                                      outputs=layer.output)
+                    # intermediate_output = np.float32(1.0)
                     intermediate_output = intermediate_layer_model.predict(data);
+                    intermediate_output = intermediate_output/max(intermediate_output.flatten())           #random approximation
                     avg_img = np.average(intermediate_output, axis=0);
                     for i in range(filters):
                         avg = avg_img[ :, :, i].mean();         #both are filters last
-                        std = avg_img[ :, :, i].std();
+                        std = avg_img[ :, :, i].std(); #print("Std =",std)
                         mean = np.ones(row * col, dtype="float32") * avg;
-                        cov = np.identity(row * col, dtype="float32") * (std ** 2);
+                        cov = np.identity(row * col, dtype="float32") * (std ** 2); #print("Cov is =", cov)
                         for j in range(channels):
                             weights0[:, :, j, i] = np.random.multivariate_normal(mean, cov).reshape((row, col));
                         weights1[i] = avg;
                 layer.set_weights([weights0, weights1]);
-                print("done layer " + str(num));
+                print("done initializing layer " + str(num));
 #--------------------------------------------------------------------------------------- Dense Layers
 
             elif len(layer.get_weights()[0].shape) == 2:
@@ -135,20 +139,24 @@ def initialize(model, X_train):
 #-------------------------------------------------------------------------------------------------- Intermediate Model
                 intermediate_layer_model = Model(inputs=model.input,outputs=layer.output)
                 intermediate_output = intermediate_layer_model.predict(data);
+                intermediate_output = intermediate_output / max(intermediate_output.flatten())  # random approximation
+
                 avg_img = np.average(intermediate_output, axis=0);
-                std = avg_img.std();
+                if avg_img.std() == (float('inf') or float('nan')) : std = (avg_img/avg_img[0]).std();
+                else: std = avg_img.std();
+
                 cov = np.identity(len(avg_img)) * (std ** 2);
 
 #-------------------------------------------------------------------------------------------------- Weights Initialization
                 weights1 = avg_img              #bias are initialized for average of the samples
                 weights0 = np.random.multivariate_normal(mean = avg_img,cov= cov,size=(layer.get_weights()[0].shape[0]))
                 layer.set_weights([weights0, weights1]);
-                print("done layer " + str(num));
+                print("done initialing layer " + str(num));
     return model;
 
 #
 #
-model2 = initialize(model= model, X_train=X_train)
+# model2 = initialize(model= model, X_train=X_train)
 #
 #
 #
