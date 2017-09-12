@@ -58,12 +58,22 @@ model.add(MaxPooling2D(pool_size=(2, 2)))
 model.add(Dropout(0.25))
 
 model.add(Flatten())
-model.add(Dense(256, activation='relu'))
+model.add(Dense(2048, activation='relu'))
 model.add(Dropout(0.5))
-model.add(Dense(10, activation='softmax'))
+model.add(Dense(1000, activation='softmax'))
 
 sgd = SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
 model.compile(loss='categorical_crossentropy', optimizer=sgd)
 
+model = initialize(model= model, X_train=X_train)
+hist = model.fit(X_train,Y_train, batch_size=32, nb_epoch=5,shuffle=True);      #hist will store everything
 
-model2 = initialize(model,X_train)
+score = model.evaluate(X_train, Y_train, batch_size=128)
+
+model.save("/home/ankit/Desktop/DDP/ImageNet/ImageNet_v1.0/SavedModels/Model1_v1.h5")
+# model = DI.initialize(model,"/media/sai/New Volume1/Practice/statefarm/images/train/")
+# checkpointer = ModelCheckpoint(filepath="/media/sai/New Volume1/Practice/statefarm/model_best/model-{epoch:02d}-{val_loss:.2f}.model", verbose=1, save_best_only=True)
+model.fit(X_train,Y_train, batch_size=32, nb_epoch=5,validation_data=(X_valid,Y_valid),shuffle=True,callbacks=[checkpointer]);
+model.save_weights('/media/sai/New Volume1/Practice/statefarm/second_try.h5')
+
+
