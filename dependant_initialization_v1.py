@@ -60,6 +60,7 @@ from keras.models import Model
 import numpy as np;
 import random
 from keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_array, load_img
+from sklearn.preprocessing import normalize
 
 def get_array(fname):
     img = load_img(fname, target_size=(128, 128));
@@ -120,27 +121,29 @@ def initialize(model, X_train):
                             weights0[:, :, j, i] = np.random.multivariate_normal(mean, cov).reshape((row, col));
                         weights1[i] = avg;
                 layer.set_weights([weights0, weights1]);
-            print("done layer " + str(num));
+                print("done layer " + str(num));
 #--------------------------------------------------------------------------------------- Dense Layers
 
-            # if len(layer.get_weights()[0].shape) == 2:
-            #     sample = random.sample(totalFiles, 8);
-            #     sample = X_train[sample]  # now take the only 32 X_train values after taking random on indexes
-            #
-            #     data = np.zeros((8, 64, 64, 3));            #channels last
-            #     data = sample
-            #     weights0 = np.zeros(layer.get_weights()[0].shape, dtype="float32");
-            #     weights1 = np.zeros(filters, dtype="float32");
-            #
-            #
-            #
-            #
-            #
-            #
-            #
-            #     intermediate_layer_model = Model(inputs=model.input,outputs=layer.output)
-            #     intermediate_output = intermediate_layer_model.predict(data);
+            elif len(layer.get_weights()[0].shape) == 2:
+                sample = random.sample(totalFiles, 8);
+                sample = X_train[sample]  # now take the only 32 X_train values after taking random on indexes
 
+                data = np.zeros((8, 64, 64, 3));            #channels last
+                data = sample
+                weights0 = np.zeros(layer.get_weights()[0].shape, dtype="float32");
+                weights1 = np.zeros(layer.get_weights()[1].shape, dtype="float32");
+#-------------------------------------------------------------------------------------------------- Intermediate Model
+                intermediate_layer_model = Model(inputs=model.input,outputs=layer.output)
+                intermediate_output = intermediate_layer_model.predict(data);
+                avg_img = np.average(intermediate_output, axis=0);
+                std = avg_img.std();
+                cov = np.identity(len(avg_img)) * (std ** 2);
+
+#-------------------------------------------------------------------------------------------------- Weights Initialization
+                weights1 = avg_img              #bias are initialized for average of the samples
+                weights0 = np.random.multivariate_normal(mean = avg_img,cov= cov,size=(layer.get_weights()[0].shape[0]))
+                layer.set_weights([weights0, weights1]);
+                print("done layer " + str(num));
     return model;
 
 #
