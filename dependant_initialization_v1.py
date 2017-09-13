@@ -109,21 +109,21 @@ def initialize(model, X_train):
                         weights0[:, :, j, i] = np.random.multivariate_normal(mean, cov).reshape((row, col));
                 layer.set_weights([weights0, weights1]);
 
-                for img in sample:
-                    intermediate_layer_model = Model(inputs=model.input,
-                                                     outputs=layer.output)
-                    # intermediate_output = np.float32(1.0)
-                    intermediate_output = intermediate_layer_model.predict(data);
-                    intermediate_output = intermediate_output/max(intermediate_output.flatten())           #random approximation
-                    avg_img = np.average(intermediate_output, axis=0);
-                    for i in range(filters):
-                        avg = avg_img[ :, :, i].mean();         #both are filters last
-                        std = avg_img[ :, :, i].std(); #print("Std =",std)
-                        mean = np.ones(row * col, dtype="float32") * avg;
-                        cov = np.identity(row * col, dtype="float32") * (std ** 2); #print("Cov is =", cov)
-                        for j in range(channels):
-                            weights0[:, :, j, i] = np.random.multivariate_normal(mean, cov).reshape((row, col));
-                        weights1[i] = avg;
+                # for img in sample:
+                intermediate_layer_model = Model(inputs=model.input,
+                                                 outputs=layer.output)
+                # intermediate_output = np.float32(1.0)
+                intermediate_output = intermediate_layer_model.predict(data);
+                intermediate_output = intermediate_output/max(intermediate_output.flatten())           #random approximation
+                avg_img = np.average(intermediate_output, axis=0);
+                for i in range(filters):
+                    avg = avg_img[ :, :, i].mean();         #both are filters last
+                    std = avg_img[ :, :, i].std(); #print("Std =",std)
+                    mean = np.ones(row * col, dtype="float32") * avg;
+                    cov = np.identity(row * col, dtype="float32") * (std ** 2); #print("Cov is =", cov)
+                    for j in range(channels):
+                        weights0[:, :, j, i] = np.random.multivariate_normal(mean, cov).reshape((row, col));
+                    weights1[i] = avg;
                 layer.set_weights([weights0, weights1]);
                 print("done initializing layer " + str(num));
 #--------------------------------------------------------------------------------------- Dense Layers

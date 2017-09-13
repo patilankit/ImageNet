@@ -5,7 +5,6 @@ from keras.utils import np_utils
 
 
 
-
 def unpickle(file):
     with open(file, 'rb') as fo:
         dict = pickle.load(fo)
@@ -39,7 +38,8 @@ def load_databatch(data_folder, idx, img_size = 64):
     img_size2 = img_size * img_size
 
     x = np.dstack((x[:, :img_size2], x[:, img_size2:2*img_size2], x[:, 2*img_size2:]))
-    x = x.reshape((x.shape[0], img_size, img_size, 3)).transpose(0, 3, 1, 2)
+    # x = x.reshape((x.shape[0], img_size, img_size, 3)).transpose(0, 3, 1, 2)            #Channels First
+    x = x.reshape((x.shape[0], img_size, img_size, 3)).transpose(0, 1, 2, 3)            #Channels Last
 
     #===================================================================================================================
     X_train = x[0:data_size, :, :, :]                   #here you can change the data_size of your training data if wished
@@ -61,6 +61,8 @@ def load_databatch(data_folder, idx, img_size = 64):
 data_folder = "/home/ankit/Desktop/DDP/ImageNet/Train"
 idx = 1
 img_size = 64
-load_databatch(data_folder= data_folder,idx = idx)
+# load_databatch(data_folder= data_folder,idx = idx)
 
+
+X_train,Y_train = load_databatch(data_folder = data_folder, idx=idx, img_size= img_size)
 
