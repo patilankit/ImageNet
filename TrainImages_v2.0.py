@@ -42,30 +42,6 @@ X_train,Y_train = load_databatch(data_folder = data_folder, idx=idx, img_size= i
 
 # X_train = np.load('X_train.npy')
 
-
-act = 'relu'
-# print "creating model"
-# model = Sequential()
-# # input: 100x100 images with 3 channels -> (100, 100, 3) tensors.
-# # this applies 32 convolution filters of size 3x3 each.
-# model.add(Conv2D(32, (3, 3), activation='relu', input_shape=(64, 64, 3), data_format= "channels_last"))
-# model.add(Conv2D(32, (3, 3), activation='relu'))
-# model.add(MaxPooling2D(pool_size=(2, 2)))
-# model.add(Dropout(0.25))
-#
-# model.add(Conv2D(64, (3, 3), activation='relu'))
-# model.add(Conv2D(64, (3, 3), activation='relu'))
-# model.add(MaxPooling2D(pool_size=(2, 2)))
-# model.add(Dropout(0.25))
-#
-# model.add(Flatten())
-# model.add(Dense(2048, activation='relu'))
-# model.add(Dropout(0.5))
-# model.add(Dense(1000, activation='softmax'))
-#
-# sgd = SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
-# model.compile(loss='categorical_crossentropy', optimizer=sgd)
-
 input_tensor = Input(shape=(64, 64, 3))
 model = VGG16(input_tensor = input_tensor,include_top=True, weights=None, pooling=None, classes=1000)
 
@@ -86,17 +62,4 @@ hist = model.fit(X_train,Y_train, batch_size=32, nb_epoch=5,verbose = 3, validat
 #-------------------------------------------------------------------------------------------------- Testing
 score = model.evaluate(X_train, Y_train, batch_size=128)
 model.save("/home/ankit/Desktop/DDP/ImageNet/ImageNet_v1.0/SavedModels/Model1_VGG_in1.h5")
-
-
-
-
-
-
-
-
-# # model = DI.initialize(model,"/media/sai/New Volume1/Practice/statefarm/images/train/")
-# checkpointer = ModelCheckpoint(filepath="/media/sai/New Volume1/Practice/statefarm/model_best/model-{epoch:02d}-{val_loss:.2f}.model", verbose=1, save_best_only=True)
-# model.fit(X_train,Y_train, batch_size=32, nb_epoch=5,validation_data=(X_valid,Y_valid),verbose =3,  shuffle=True,callbacks=[checkpointer]);
-# model.save_weights('/media/sai/New Volume1/Practice/statefarm/second_try.h5')
-
 
