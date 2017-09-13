@@ -1,5 +1,5 @@
 # ImageNet
 
-There are no Image crops yet
-Just taking the raw images and taking there averages...
+Implementing new initialization techniques for CNN using the image data statistics.
+It has given very promising results till now. Working on the ImageNet dataset to check the feasibility.
 
